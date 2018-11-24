@@ -4,23 +4,25 @@
  */
 
 #include "scheduler.h"
-#include <AP_Scheduler.h>
-// APM2 Hardware Abstraction Layer (HAL) libraries
-#include <AP_HAL.h>
-#include <AP_HAL_AVR.h>
 
 // Includes for scheduled functions
-#include <sensor_read.h>
-#include <communication.h>
+#include "communication.h"
+#include "imu_fast_loop.h"
+#include "sensor_read.h"
 
-# define MAIN_LOOP_RATE    100
-# define MAIN_LOOP_SECONDS 0.01
-# define MAIN_LOOP_MICROS  10000
+#include <stdint.h>
+#include <AP_HAL.h>
+#include <AP_HAL_AVR.h>
+#include <AP_Scheduler.h>
+
+
+#define MAIN_LOOP_RATE 100
+#define MAIN_LOOP_SECONDS 0.01
+#define MAIN_LOOP_MICROS 10000
+
 
 static AP_Scheduler scheduler;
 
-// Hardware Abstraction Layer (HAL) for APM Board
-const AP_HAL::HAL& hal = AP_HAL_BOARD_DRIVER;
 
 void scheduler_init()
 {
@@ -29,21 +31,20 @@ void scheduler_init()
       often they should be called (in 10ms units) and the maximum time
       they are expected to take (in microseconds)
      */
-    static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
-        { read_imu,                1,   1000},
-        { read_baro_alt,           2,   1000},
-        { comm_one_hz_downlink,  100,   1000}
-    };
+    static const AP_Scheduler::Task scheduler_tasks[] PROGMEM
+        = {{read_baro_alt, 2, 1000}, {comm_one_hz_downlink, 100, 1000}};
 
-    scheduler.init(&scheduler_tasks[0], sizeof(scheduler_tasks)/sizeof(scheduler_tasks[0]));
+    scheduler.init(&scheduler_tasks[0], sizeof(scheduler_tasks) / sizeof(scheduler_tasks[0]));
 }
 
 void scheduler_execute()
 {
+    // Hardware Abstraction Layer (HAL) for APM Board
+    const AP_HAL::HAL &hal = AP_HAL_BOARD_DRIVER;
 
     // First, execute the fast loop
-    uint32_t frame_start_time_us;
-    frame_start_time_us = imu_fast_loop_exectue();
+    uint32_t frame_start_time_usec;
+    frame_start_time_usec = imu_fast_loop_exectue();
 
     // Tell the scheduler one tick has passed
     scheduler.tick();
@@ -53,6 +54,6 @@ void scheduler_execute()
     // in multiples of the main loop tick. So if they don't run on
     // the first call to the scheduler they won't run on a later
     // call until scheduler.tick() is called again
-    uint32_t time_available = (frame_start_time_us + MAIN_LOOP_MICROS) - hal.scheduler->micros();
+    uint32_t time_available = (frame_start_time_usec + MAIN_LOOP_MICROS) - hal.scheduler->micros();
     scheduler.run(time_available);
 }

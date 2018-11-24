@@ -7,5 +7,5 @@
 
 void motor_command_init()
 {
-    //init_rc_out();              // sets up motors and output to escs
+    // init_rc_out();              // sets up motors and output to escs
 }

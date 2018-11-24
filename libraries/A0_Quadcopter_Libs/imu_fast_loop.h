@@ -6,6 +6,8 @@
 #ifndef IMU_FAST_LOOP_H
 #define IMU_FAST_LOOP_H
 
+#include <stdint.h>
+
 //
 // IMU intialization and setting of IMU sampling rate - and thus imu fast loop rate.
 //

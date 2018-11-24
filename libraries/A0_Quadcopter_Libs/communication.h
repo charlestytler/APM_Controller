@@ -5,11 +5,13 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
+#include <stdbool.h>
+
 //
 // Configures initial settings for UART communications from Hardware Abstraction Layer (HAL).
 //
 // [input] hal: Hardware Abstraction Layer class instance.
-bool establish_communcunication_link(AP_HAL::HAL hal);
+bool establish_communication_link();
 
 //
 // Scheduled task which downlinks logging data at 1 Hz.
