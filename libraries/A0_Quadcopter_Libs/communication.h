@@ -14,8 +14,8 @@
 bool establish_communication_link();
 
 //
-// Scheduled task which downlinks logging data at 1 Hz.
+// Scheduled task which downlinks logging data.
 //
-void comm_one_hz_downlink(void);
+void comm_logging_downlink(void);
 
 #endif

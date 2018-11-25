@@ -54,7 +54,7 @@ bool establish_communication_link()
 }
 
 
-void comm_one_hz_downlink(void)
+void comm_logging_downlink(void)
 {
     // Hardware Abstraction Layer (HAL) for APM Board
     const AP_HAL::HAL &hal = AP_HAL_BOARD_DRIVER;
@@ -62,8 +62,7 @@ void comm_one_hz_downlink(void)
     sensor_measurement_t sensor_measurement;
     read_sensor_measurement(&sensor_measurement);
 
-    /*
-    // Planned serialized downlink.
+    // Serialized downlink.
     uint8_t buffer[100];
     if (sizeof(buffer) > sizeof(sensor_measurement))
     {
@@ -76,10 +75,10 @@ void comm_one_hz_downlink(void)
         hal.console->write(buffer[i]);
     }
     hal.console->print_P(PSTR("END\n"));
-    */
 
+    /*
     // Output as a string for debugging
-    hal.console->printf("IMU ax:%f ay:%f az:%f t:%f  Gyro wx:%f wy:%f wz:%f  Baro alt:%f t:%f\n",
+    hal.console->printf("%f %f %f %f %f %f %f %f %f\n",
                         sensor_measurement.imu_meas.accel_mps.x,
                         sensor_measurement.imu_meas.accel_mps.y,
                         sensor_measurement.imu_meas.accel_mps.z,
@@ -89,4 +88,5 @@ void comm_one_hz_downlink(void)
                         sensor_measurement.imu_meas.gyro_rads.z,
                         sensor_measurement.barometer_meas.altitude_m,
                         (float) sensor_measurement.barometer_meas.timestamp_usec / 1.0E6);
+    */
 }

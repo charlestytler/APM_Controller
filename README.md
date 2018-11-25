@@ -27,7 +27,7 @@ Supporting libraries for the sketch file are located in `libraries/A0_Quadcopter
 
 The code in this release provides just the basis for the architecture of the autopilot code.  
 When the firmware is uploaded to the Arduino controller, there are four main components that run:
-  - **Task Scheduler:** This schedules two tasks, read_baro() and comms_one_hz_downlink(), and how often they run.
+  - **Task Scheduler:** This schedules two tasks, read_baro() and comm_logging_downlink(), and how often they run.
   - **IMU Fast Loop:** This is the task which reads IMU data and waits for new samples in an attempt to closely align timestamps.
   - **Global Data:** This component is a repository for stored data that needs to be shared across different components.
   - **Sensor Read:** This has a task scheduled to run every 20ms to read the barometer altitude estimate. Both it and IMU Fast Loop publish their sensor readings to the Global Data component.
