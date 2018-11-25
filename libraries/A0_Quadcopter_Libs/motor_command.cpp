@@ -1,5 +1,5 @@
 /*
- * motor_command.c - Library for outputting motor PWM commands as commanded by controller.
+ * motor_command.cpp - Library for outputting motor PWM commands as commanded by controller.
  * Created by Charlie Tytler  2018
  */
 

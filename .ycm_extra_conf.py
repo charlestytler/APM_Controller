@@ -5,6 +5,7 @@
 """
 import os
 import ycm_core
+import subprocess
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
 if os.path.dirname(__file__) == '':
@@ -51,6 +52,24 @@ FLAGS = [
     '/usr/local/include',
     '-I.',
 ]
+
+
+def find_git_root():
+    pipe = subprocess.Popen(['git', 'rev-parse', '--show-toplevel'],
+                            stdout=subprocess.PIPE)
+    repo_dir = pipe.communicate()[0].rstrip().decode('utf-8')
+    return repo_dir
+
+
+def gen_recursive_include_path(dir):
+    subdirs = [x[0] for x in os.walk(dir) if "CMake" not in x[0]]
+    include_path = []
+    for x in subdirs:
+        include_path.extend(['-I', x])
+    return include_path
+
+FLAGS = FLAGS + gen_recursive_include_path(find_git_root())
+FLAGS = FLAGS + gen_recursive_include_path(find_git_root())
 
 
 # Set this to the absolute path to the folder (NOT the file!) containing the
@@ -146,3 +165,4 @@ def FlagsForFile(filename, **kwargs):
     return {'flags': final_flags,
             'do_cache': True
             }
+

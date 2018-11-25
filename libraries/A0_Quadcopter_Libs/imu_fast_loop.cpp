@@ -1,5 +1,5 @@
 /*
- * imu_fast_loop.c - Library for "fast loop" functions which will be aligned with
+ * imu_fast_loop.cpp - Library for "fast loop" functions which will be aligned with
  *     the IMU sampling rate.
  * Created by Charlie Tytler  2018
  */

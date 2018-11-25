@@ -1,6 +1,6 @@
 /*
- * global_data.c - Storage of global data shared across tasks.
- *   Created by Charlie Tytler  2018
+ * global_data.cpp - Storage of global data shared across tasks.
+ * Created by Charlie Tytler  2018
  */
 
 #include "global_data.h"

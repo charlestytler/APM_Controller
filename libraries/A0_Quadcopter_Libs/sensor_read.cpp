@@ -1,5 +1,5 @@
 /*
- * sensor_read.c - Library for updating sensor values from APM hardware
+ * sensor_read.cpp - Library for updating sensor values from APM hardware
  * Created by Charlie Tytler  2018
  */
 

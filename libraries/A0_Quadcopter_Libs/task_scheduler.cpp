@@ -1,5 +1,5 @@
 /*
- * scheduler.c - Library for scheduling tasks for Quadcopter controller to execute each frame.
+ * scheduler.cpp - Library for scheduling tasks for Quadcopter controller to execute each frame.
  * Created by Charlie Tytler  2018
  */
 

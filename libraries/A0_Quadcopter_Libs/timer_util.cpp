@@ -1,5 +1,6 @@
 /*
  * timer_util.cpp - A debug utility to time a procedure on target.
+ * Created by Charlie Tytler  2018
  */
 
 #include <AP_HAL.h>

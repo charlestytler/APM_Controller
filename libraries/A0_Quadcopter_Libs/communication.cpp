@@ -1,5 +1,5 @@
 /*
- * communication.c - Library for uplink (to vehicle) and downlink (from vehcile) between vehicle and ground station.
+ * communication.cpp - Library for uplink (to vehicle) and downlink (from vehcile) between vehicle and ground station.
  * Created by Charlie Tytler  2018
  */
 

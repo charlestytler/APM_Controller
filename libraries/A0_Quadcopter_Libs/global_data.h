@@ -1,6 +1,6 @@
 /*
  * global_data.h - Storage of global data shared across tasks.
- *   Created by Charlie Tytler  2018
+ * Created by Charlie Tytler  2018
  */
 #ifndef GLOBAL_DATA_H
 #define GLOBAL_DATA_H
