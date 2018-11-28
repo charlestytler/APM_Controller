@@ -1,5 +1,5 @@
 import math
-import cairo
+import cairocffi as cairo
 
 from common import *
 

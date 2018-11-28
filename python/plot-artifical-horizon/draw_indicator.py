@@ -7,11 +7,11 @@ import view_roll
 import view_static
 
 if __name__ == "__main__":
-    import cairo
+    import cairocffi as cairo
     fn = "indicator"
-    with cairo.SVGSurface(fn + ".svg", max_x, max_y) as surface:
-        cr = cairo.Context(surface)
-
+    surface = cairo.SVGSurface(fn + ".svg", max_x, max_y) 
+    cr = cairo.Context(surface)
+    with cr:
         cr.arc(cx, cy, max_x/2, 0, 2*math.pi)
         cr.clip()
 
