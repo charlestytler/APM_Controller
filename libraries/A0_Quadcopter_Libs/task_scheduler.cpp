@@ -3,12 +3,13 @@
  * Created by Charlie Tytler  2018
  */
 
-#include "scheduler.h"
+#include "task_scheduler.h"
 
 // Includes for scheduled functions
 #include "communication.h"
 #include "imu_fast_loop.h"
 #include "sensor_read.h"
+#include "state_estimation.h"
 
 #include <stdint.h>
 #include <AP_HAL.h>
@@ -32,7 +33,7 @@ void scheduler_init()
       they are expected to take (in microseconds)
      */
     static const AP_Scheduler::Task scheduler_tasks[] PROGMEM
-        = {{read_baro_alt, 2, 1000}, {comm_logging_downlink, 2, 1200}};
+        = {{update_euler_angle_estimate, 1, 1500}, {read_baro_alt, 2, 1000}, {comm_logging_downlink, 2, 1200}};
 
     scheduler.init(&scheduler_tasks[0], sizeof(scheduler_tasks) / sizeof(scheduler_tasks[0]));
 }

@@ -5,6 +5,7 @@
 
 #include "communication.h"
 
+#include "communication_types.h"
 #include "global_data.h"
 
 #include <AP_Common.h>
@@ -61,12 +62,18 @@ void comm_logging_downlink(void)
 
     sensor_measurement_t sensor_measurement;
     read_sensor_measurement(&sensor_measurement);
+    vehicle_state_t estimated_state;
+    read_estimated_state(&estimated_state);
+
+    downlink_message_t downlink_msg;
+    downlink_msg.sensor_measurement = sensor_measurement;
+    downlink_msg.estimated_state    = estimated_state;
 
     // Serialized downlink.
     uint8_t buffer[100];
-    if (sizeof(buffer) > sizeof(sensor_measurement))
+    if (sizeof(buffer) > sizeof(downlink_msg))
     {
-        memcpy(&buffer, &sensor_measurement, sizeof(sensor_measurement));
+        memcpy(&buffer, &downlink_msg, sizeof(downlink_msg));
     }
 
     hal.console->print_P(PSTR("BEG"));

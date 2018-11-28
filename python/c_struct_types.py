@@ -10,7 +10,11 @@
 #   Created by Charlie Tytler  2018
 #
 
-header_file = '../libraries/A0_Quadcopter_Libs/global_data.h'
+header_files = [
+        '../libraries/A0_Quadcopter_Libs/math_types.h',
+        '../libraries/A0_Quadcopter_Libs/global_data.h',
+        '../libraries/A0_Quadcopter_Libs/communication_types.h',
+]
 
 supported_types = ['uint8_t', 'uint16_t', 'uint32_t', 'float', 'char']
 
@@ -28,12 +32,6 @@ def remove_multiple_spaces(string_before):
         string_after = string_before.replace('  ', ' ')
     return string_after
 
-
-# Read in contents of header file.
-with open(header_file, 'r') as fid:
-    h_contents = fid.read()
-h_contents = h_contents.replace('\n', '')
-h_contents = remove_multiple_spaces(h_contents)
 
 
 def get_field_list(fields):
@@ -60,37 +58,44 @@ def get_field_list(fields):
     return field_list
 
 
+for header_file in header_files:
+    # Read in contents of header file.
+    with open(header_file, 'r') as fid:
+        h_contents = fid.read()
+    h_contents = h_contents.replace('\n', '')
+    h_contents = remove_multiple_spaces(h_contents)
 
-# Exctract all type definitions of form typedef ... ;
-type_defs = []
-typedef_idx = h_contents.find('typedef', 0)
-while typedef_idx >= 0:
-    # Get typename
-    space_delimiter_idx = h_contents.find(' ', typedef_idx + 8)
-    typedef_type = h_contents[typedef_idx + 8: space_delimiter_idx]
-    if 'struct' in typedef_type:
-        start_brace_idx = h_contents.find('{', typedef_idx)
-        end_brace_idx = h_contents.find('}', typedef_idx)
-        semicolon_idx = h_contents.find(';', end_brace_idx)
-        struct_type_contents = h_contents[start_brace_idx + 1: end_brace_idx]
-        struct_type_contents = struct_type_contents.split(';')
 
-        fields = h_contents[start_brace_idx + 1 : end_brace_idx].split(';')
-        field_list = get_field_list(fields[0:-1])
+    # Exctract all type definitions of form typedef ... ;
+    type_defs = []
+    typedef_idx = h_contents.find('typedef', 0)
+    while typedef_idx >= 0:
+        # Get typename
+        space_delimiter_idx = h_contents.find(' ', typedef_idx + 8)
+        typedef_type = h_contents[typedef_idx + 8: space_delimiter_idx]
+        if 'struct' in typedef_type:
+            start_brace_idx = h_contents.find('{', typedef_idx)
+            end_brace_idx = h_contents.find('}', typedef_idx)
+            semicolon_idx = h_contents.find(';', end_brace_idx)
+            struct_type_contents = h_contents[start_brace_idx + 1: end_brace_idx]
+            struct_type_contents = struct_type_contents.split(';')
 
-        struct_type_name = h_contents[end_brace_idx + 1: semicolon_idx].replace(' ', '')
+            fields = h_contents[start_brace_idx + 1 : end_brace_idx].split(';')
+            field_list = get_field_list(fields[0:-1])
 
-        # Create ctype structure class with name struct_type_name
-        new_type = type(struct_type_name, (ctypes.Structure,), {'_fields_':field_list})
-        exec(struct_type_name + '= new_type')
-        del new_type
-        supported_types.append(struct_type_name)
-        __all__.append(struct_type_name)
+            struct_type_name = h_contents[end_brace_idx + 1: semicolon_idx].replace(' ', '')
 
-    else:
-        semicolon_idx = h_contents.find(';', typedef_idx)
-        type_name = h_contents[space_delimiter_idx: semicolon_idx]
-        # Only struct definitions are supported at the moment.
-        print("Definition skipped (not a struct): " + typedef_type.strip() + " " + type_name)
+            # Create ctype structure class with name struct_type_name
+            new_type = type(struct_type_name, (ctypes.Structure,), {'_fields_':field_list})
+            exec(struct_type_name + '= new_type')
+            del new_type
+            supported_types.append(struct_type_name)
+            __all__.append(struct_type_name)
 
-    typedef_idx = h_contents.find('typedef', semicolon_idx)
+        else:
+            semicolon_idx = h_contents.find(';', typedef_idx)
+            type_name = h_contents[space_delimiter_idx: semicolon_idx]
+            # Only struct definitions are supported at the moment.
+            print("Definition skipped (not a struct): " + typedef_type.strip() + " " + type_name)
+
+        typedef_idx = h_contents.find('typedef', semicolon_idx)

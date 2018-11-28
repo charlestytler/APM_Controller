@@ -38,6 +38,7 @@
 #include <imu_fast_loop.h>
 #include <motor_command.h>
 #include <sensor_read.h>
+#include <state_estimation.h>
 #include <task_scheduler.h>
 
 
@@ -50,6 +51,7 @@ void setup(void)
     imu_fast_loop_init();
     sensor_init_and_calibrate();
     motor_command_init();
+    state_estimation_init();
     scheduler_init();
     establish_communication_link();
 }

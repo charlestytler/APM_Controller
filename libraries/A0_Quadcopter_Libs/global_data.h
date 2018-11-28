@@ -5,16 +5,10 @@
 #ifndef GLOBAL_DATA_H
 #define GLOBAL_DATA_H
 
+#include "math_types.h"
 #include <stdint.h>
 
 // Data type definitions.
-typedef struct
-{
-    float x;
-    float y;
-    float z;
-} vector_t;
-
 typedef struct
 {
     vector_t accel_mps;
@@ -37,9 +31,10 @@ typedef struct
 typedef struct
 {
     vector_t vel_b_mps;
-    vector_t ang_accel_b_rads;
     vector_t ang_vel_b_rads;
+    vector_t euler_angle_rad;
     vector_t pos_E_m;
+    float    timestamp_usec;
 } vehicle_state_t;
 
 // Read/Write access to stored data (writes *to* global_data, and reads *from* global_data).

@@ -7,4 +7,9 @@
 #define STATE_ESTIMATION_H
 
 
+void state_estimation_init();
+
+void update_euler_angle_estimate();
+
+
 #endif
