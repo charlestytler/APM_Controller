@@ -5,29 +5,44 @@ import draw_indicator_frame
 from common import max_x, max_y
 
 
-class A:
-    def __init__(self, master):
-        self.label=tkinter.Label(master)
+class IndicatorWindow:
+    def __init__(self):
+        self.root = tkinter.Tk()
+        self.label=tkinter.Label(self.root)
         self.label.grid(row=0, column=0)
 
-        self.count = 0
-        self.roll_vec = np.linspace(1, 20, 50)
-        self.pitch_vec = np.linspace(-20, 40, 50)
-        self.update_label()
+    def update(self, roll, pitch):
+        fn = "indicator"
+        draw_indicator_frame.run(
+            fn,
+            roll=roll,
+            pitch=pitch)
+        photo = tkinter.PhotoImage(file=fn+".png")
+        self.label.configure(image=photo)
+        self.label.image = photo
+        self.root.update()
 
-    def update_label(self):
-        if self.count < 50:
-            fn = "indicator"
-            draw_indicator_frame.run(
-                fn,
-                roll=self.roll_vec[self.count],
-                pitch=self.pitch_vec[self.count])
-            photo = tkinter.PhotoImage(file=fn+".png")
-            self.label.configure(image=photo)
-            self.label.image = photo
-            self.label.after(1, self.update_label)
-            self.count += 1
+    def exit():
+        self.root.quit()
 
-root = tkinter.Tk()
-A(root)
-root.mainloop()
+def example_main():
+    """
+    Must call ctrl+c from command line to exit window
+    """
+    window = IndicatorWindow() # keep this
+
+    # temporary
+    # ========
+    loop_active = True
+    max_count = 50
+    roll_vec = np.linspace(1, 20, max_count)
+    pitch_vec = np.linspace(-20, 40, max_count)
+    counter = 0
+
+    while loop_active:
+        if counter < max_count:
+            window.update(roll_vec[counter], pitch_vec[counter]) # keep this
+        counter += 1
+
+if __name__ == "__main__":
+    example_main()
