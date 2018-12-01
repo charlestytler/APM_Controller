@@ -1,4 +1,4 @@
-from common import *
+from PlotArtificialHorizon.common import *
 
 def draw_aircraft_indicator(cr):
     cr.set_source_rgb(*color_orange)

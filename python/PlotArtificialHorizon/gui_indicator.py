@@ -1,8 +1,8 @@
 import numpy as np
 import tkinter
 
-import draw_indicator_frame
-from common import max_x, max_y
+import PlotArtificialHorizon.draw_indicator_frame as draw_indicator_frame
+from PlotArtificialHorizon.common import max_x, max_y
 
 
 class IndicatorWindow:

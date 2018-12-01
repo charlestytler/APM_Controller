@@ -1,6 +1,6 @@
 import math
 
-from common import *
+from PlotArtificialHorizon.common import *
 
 _settings = {
     'thin': {

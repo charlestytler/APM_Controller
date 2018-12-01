@@ -1,11 +1,11 @@
 import cairocffi as cairo
 import math
 
-from common import *
+from PlotArtificialHorizon.common import *
 
-import view_pitch
-import view_roll
-import view_static
+import PlotArtificialHorizon.view_pitch as view_pitch
+import PlotArtificialHorizon.view_roll as view_roll
+import PlotArtificialHorizon.view_static as view_static
 
 def main(cr, roll=0, pitch=0):
     cr.arc(cx, cy, max_x/2, 0, 2*math.pi)

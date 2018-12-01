@@ -1,7 +1,7 @@
 import math
 import cairocffi as cairo
 
-from common import *
+from PlotArtificialHorizon.common import *
 
 def _draw_sky_and_ground(cr, pitch_deg=0, roll_deg=0):
     offset = 200
