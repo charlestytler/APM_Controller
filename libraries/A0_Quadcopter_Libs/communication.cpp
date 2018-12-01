@@ -66,8 +66,9 @@ void comm_logging_downlink(void)
     read_estimated_state(&estimated_state);
 
     downlink_message_t downlink_msg;
-    downlink_msg.sensor_measurement = sensor_measurement;
-    downlink_msg.estimated_state    = estimated_state;
+    downlink_msg.sensor_measurement      = sensor_measurement;
+    downlink_msg.estimated_state         = estimated_state;
+    downlink_msg.downlink_timestamp_usec = hal.scheduler->micros();
 
     // Serialized downlink.
     uint8_t buffer[100];

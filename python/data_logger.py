@@ -5,11 +5,8 @@ from c_struct_types import *
 import logging
 import sys
 
-def deserialize_buffer(src, dest):
-    size_already_deserialized = 0 * ctypes.sizeof(dest[0])
-    for dest_structure in dest:
-        ctypes.memmove(ctypes.addressof(dest_structure), ctypes.addressof(src) + size_already_deserialized, ctypes.sizeof(dest_structure))
-        size_already_deserialized += ctypes.sizeof(dest_structure)
+
+log_data_option = False
 
 
 #Logging settings
@@ -23,11 +20,14 @@ port = serial.Serial('/dev/ttyS3', 57600)
 if port.is_open:
     print('Port connected; receiving packets...')
 
+# Object to store messages
+stored_messages = []
+
 # Read a set of packets
 packet_counter = 0
 port.reset_input_buffer()
 get_next_packet(port)  # called to flush port of any old data
-while True: #packet_counter < 200:
+while True:
     packet = get_next_packet(port)
 
     # Deserialize binary packet into ctype struct
@@ -38,6 +38,9 @@ while True: #packet_counter < 200:
     received_estimated_state = vehicle_state_t()
     received_sensor_data = received_msg.sensor_measurement
     received_estimated_state = received_msg.estimated_state
+
+    if log_data_option:
+        stored_messages.append(received_msg)
 
 
 #    logging.info("IMU ax:%f ay:%f az:%f time:%f  Baro alt_m:%f time:%f"
@@ -56,3 +59,11 @@ while True: #packet_counter < 200:
     packet_counter += 1
 
 port.close()
+
+if log_data_option:
+    import os
+    import pickle
+    import datetime
+    datetime_suffix = datetime.datetime.now().strftime("%Y_%m_%d_%H%M%S")
+    with open(os.path.join("logs", "logged_downlinks" + datetime_suffix + ".dat"),"wb") as fid:
+        pickle.dump(stored_messages, fid)

@@ -11,6 +11,7 @@ typedef struct
 {
     sensor_measurement_t sensor_measurement;
     vehicle_state_t      estimated_state;
+    uint32_t             downlink_timestamp_usec;
 } downlink_message_t;
 
 #endif
