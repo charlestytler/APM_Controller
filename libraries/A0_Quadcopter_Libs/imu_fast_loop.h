@@ -19,4 +19,10 @@ void imu_fast_loop_init();
 // [return] Returns the start time of the frame in microseconds.
 uint32_t imu_fast_loop_exectue();
 
+
+//
+// Displays accelerometer and gyro offset and scaling values.
+//
+void display_offsets_and_scaling();
+
 #endif

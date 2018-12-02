@@ -66,47 +66,31 @@ void update_euler_angle_estimate()
     read_sensor_measurement(&sensor_measurement);
 
     // Update estimated_state.
-    const float    delta_time = (sensor_measurement.imu_meas.timestamp_usec - estimated_state.timestamp_usec) * 1E-6F;
+    const float delta_time = (sensor_measurement.imu_meas.timestamp_usec - estimated_state.timestamp_usec) * 1E-6F;
+
+    // Euler angle update from gyro.
     vector_t       delta_euler_angle_rad;
     const vector_t euler_angle_dot
         = calculate_xdot(estimated_state.euler_angle_rad, sensor_measurement.imu_meas.gyro_rads);
     scalar_multiply(delta_time, &euler_angle_dot, &delta_euler_angle_rad);
     estimated_state.euler_angle_rad = vector_add(&estimated_state.euler_angle_rad, &delta_euler_angle_rad);
-    estimated_state.timestamp_usec  = sensor_measurement.imu_meas.timestamp_usec;
+
+    // Euler angle update from accelerometer.
+    const float accel_y_sq = sensor_measurement.imu_meas.accel_mpss.y * sensor_measurement.imu_meas.accel_mpss.y;
+    const float accel_z_sq = sensor_measurement.imu_meas.accel_mpss.z * sensor_measurement.imu_meas.accel_mpss.z;
+    const float accel_magnitude_sq
+        = sensor_measurement.imu_meas.accel_mpss.x * sensor_measurement.imu_meas.accel_mpss.x + accel_y_sq + accel_z_sq;
+    if (90.0F < accel_magnitude_sq && accel_magnitude_sq < 110.0F)
+    {
+        float phi_est   = atan2f(-sensor_measurement.imu_meas.accel_mpss.y, -sensor_measurement.imu_meas.accel_mpss.z);
+        float theta_est = atan2f(sensor_measurement.imu_meas.accel_mpss.x, sqrtf(accel_y_sq + accel_z_sq));
+        // Apply complimentary filter update to euler angle estimates
+        estimated_state.euler_angle_rad.x = 0.99F * estimated_state.euler_angle_rad.x + 0.01F * phi_est;
+        estimated_state.euler_angle_rad.y = 0.99F * estimated_state.euler_angle_rad.y + 0.01F * theta_est;
+    }
+
+    estimated_state.timestamp_usec = sensor_measurement.imu_meas.timestamp_usec;
 
     // Write to global_data.
     write_estimated_state(estimated_state);
 }
-
-
-/*
-# Derivative function
-def xdot(x,u):
-        x_dot = [0,0,0]
-            #   phidot = p + (q*sin(phi) + r*cos(phi))*tan(theta)
-            x_dot[0] = u[0] + (u[1]*sin(x[0]) + u[2]*cos(x[0]))*tan(x[1])
-        #   thetadot = q*cos(phi) - r*sin(phi)
-        x_dot[1] = u[1]*cos(x[0]) - u[2]*sin(x[0])
-        #   psidot = (q*sin(phi) + r*cos(phi))*sec(theta)
-        x_dot[2] = (u[1]*sin(x[0]) + u[2]*cos(x[0]))*sec(x[1])
-        return x_dot
-# Initial condition setup
-        eulerAngles = [0,0,0]      #Assume start up with phi = theta = psi = 0 radians
-        deltaT = 0.01              #Sampling time (sec)
-# While loop
-    while True:
-        omegaRead = gyros.getAngularVelocity()
-        eulerAngles += xdot(eulerAngles,omegaRead) * deltaT
-
-
-def accelLevel(accelRead):
-        # Takes accelerometer specific force reading when stationary and estimates
-        # phi and theta from the gravity vector
-        fx_b = accelRead[0]
-            fy_b = accelRead[1]
-                fz_b = accelRead[2]
-                    phi_est = arctan2(-fy_b,-fz_b)
-        theta_est = arctan2(fx_b, sqrt(fy_b*fy_b + fz_b*fz_b))
-
-        return phi_est, theta_est
-*/

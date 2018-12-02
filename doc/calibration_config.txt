@@ -1,0 +1,14 @@
+Initial Setup Complete
+Init Gyro**Init Accel********* Place vehicle level and press any key.
+Place vehicle on its LEFT side and press any key.
+Place vehicle on its RIGHT side and press any key.
+Place vehicle nose DOWN and press any key.
+Place vehicle nose UP and press any key.
+Place vehicle on its BACK and press any key.
+Offsets[0]: -0.03 0.04 -0.12
+Scaling[0]: 1.00 1.00 0.98
+Calibration successful
+
+Accel Offsets X:-0.03143430      Y:0.04285612    Z:-0.1212885
+Accel Scale X:1.001117   Y:1.003020      Z:0.9865334
+Gyro O:-0.0120.0069 -0.002

@@ -11,7 +11,7 @@
 // Data type definitions.
 typedef struct
 {
-    vector_t accel_mps;
+    vector_t accel_mpss;
     vector_t gyro_rads;
     uint32_t timestamp_usec;
 } imu_meas_t;

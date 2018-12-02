@@ -44,10 +44,6 @@ if port.is_open:
 else:
     raise Exception('Unable to connect to port on ' + args.serial_port)
 
-# Attitude Indicator window
-if args.display:
-    figure = IndicatorWindow()
-    figure_update_counter = 0
 
 # Function for parsing fieldnames from argument strings
 if args.ploty:
@@ -85,35 +81,19 @@ while packet_counter < max_packet_num:
     ctypes.memmove(ctypes.addressof(received_msg), packet, ctypes.sizeof(received_msg))
 
     received_sensor_data = sensor_measurement_t()
-    received_estimated_state = vehicle_state_t()
     received_sensor_data = received_msg.sensor_measurement
-    received_estimated_state = received_msg.estimated_state
 
 
     ############  Printing Contents of Downlink Messages ##################
 
     if not args.silent:
-    #logging.info("IMU ax:%f ay:%f az:%f time:%f  Baro alt_m:%f time:%f"
-    #                    % (received_sensor_data.imu_meas.accel_mpss.x,
-    #                    received_sensor_data.imu_meas.accel_mpss.y,
-    #                    received_sensor_data.imu_meas.accel_mpss.z,
-    #                    received_sensor_data.imu_meas.timestamp_usec / 1.0E6,
-    #                    received_sensor_data.barometer_meas.altitude_m,
-    #                    received_sensor_data.barometer_meas.timestamp_usec / 1.0E6))
-
-        logging.info("Attitude roll:%f pitch:%f yaw:%f time:%f"
-                            % (received_estimated_state.euler_angle_rad.x * 57.3,
-                            received_estimated_state.euler_angle_rad.y * 57.3,
-                            received_estimated_state.euler_angle_rad.z * 57.3,
-                            received_estimated_state.timestamp_usec / 1.0E6))
-
-    ###############  Display of Attitude Indicator #########################
-    # Update artificial horizon graphic
-    if args.display:
-        figure_update_counter += 1
-        if figure_update_counter >= 4:
-            figure.update(received_estimated_state.euler_angle_rad.x * 57.3, received_estimated_state.euler_angle_rad.y * 57.3)
-            figure_update_counter = 0
+        logging.info("IMU ax:%f ay:%f az:%f time:%f  Baro alt_m:%f time:%f"
+                            % (received_sensor_data.imu_meas.accel_mpss.x,
+                            received_sensor_data.imu_meas.accel_mpss.y,
+                            received_sensor_data.imu_meas.accel_mpss.z,
+                            received_sensor_data.imu_meas.timestamp_usec / 1.0E6,
+                            received_sensor_data.barometer_meas.altitude_m,
+                            received_sensor_data.barometer_meas.timestamp_usec / 1.0E6))
 
 
     ############### Plotting of Downlinked Content ########################

@@ -48,12 +48,13 @@ const AP_HAL::HAL &hal = AP_HAL_BOARD_DRIVER;
 
 void setup(void)
 {
+    establish_communication_link();
     imu_fast_loop_init();
     sensor_init_and_calibrate();
+
     motor_command_init();
     state_estimation_init();
     scheduler_init();
-    establish_communication_link();
 }
 
 void loop()

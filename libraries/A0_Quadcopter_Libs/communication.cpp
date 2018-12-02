@@ -71,11 +71,18 @@ void comm_logging_downlink(void)
     downlink_msg.downlink_timestamp_usec = hal.scheduler->micros();
 
     // Serialized downlink.
+    // Can support 128 bytes total, running at 50 Hz performs well with 100 bytes over USB,
+    // but < 50 bytes reliably for SiK Radio.
     uint8_t buffer[100];
     if (sizeof(buffer) > sizeof(downlink_msg))
     {
         memcpy(&buffer, &downlink_msg, sizeof(downlink_msg));
     }
+    else
+    {
+        hal.console->print("Buffer is too small\n");
+    }
+
 
     hal.console->print_P(PSTR("BEG"));
     for (uint16_t i = 0; i < sizeof(buffer); i++)
@@ -83,18 +90,4 @@ void comm_logging_downlink(void)
         hal.console->write(buffer[i]);
     }
     hal.console->print_P(PSTR("END\n"));
-
-    /*
-    // Output as a string for debugging
-    hal.console->printf("%f %f %f %f %f %f %f %f %f\n",
-                        sensor_measurement.imu_meas.accel_mps.x,
-                        sensor_measurement.imu_meas.accel_mps.y,
-                        sensor_measurement.imu_meas.accel_mps.z,
-                        (float) sensor_measurement.imu_meas.timestamp_usec / 1.0E6,
-                        sensor_measurement.imu_meas.gyro_rads.x,
-                        sensor_measurement.imu_meas.gyro_rads.y,
-                        sensor_measurement.imu_meas.gyro_rads.z,
-                        sensor_measurement.barometer_meas.altitude_m,
-                        (float) sensor_measurement.barometer_meas.timestamp_usec / 1.0E6);
-    */
 }
