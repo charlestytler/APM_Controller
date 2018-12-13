@@ -5,7 +5,6 @@
 
 #include "state_estimation.h"
 
-#include "global_data.h"
 #include "linear_algebra.h"
 #include <math.h>
 
@@ -57,7 +56,7 @@ void state_estimation_init()
 }
 
 
-void update_euler_angle_estimate()
+void state_estimation_execute()
 {
     // Read from global_data.
     vehicle_state_t estimated_state;
@@ -65,32 +64,44 @@ void update_euler_angle_estimate()
     sensor_measurement_t sensor_measurement;
     read_sensor_measurement(&sensor_measurement);
 
-    // Update estimated_state.
-    const float delta_time = (sensor_measurement.imu_meas.timestamp_usec - estimated_state.timestamp_usec) * 1E-6F;
+    // Update state estimate.
+    propagate_state_estimate(&sensor_measurement.imu_meas, &estimated_state);
+    measurement_update(&sensor_measurement, &estimated_state);
 
-    // Euler angle update from gyro.
-    vector_t       delta_euler_angle_rad;
-    const vector_t euler_angle_dot
-        = calculate_xdot(estimated_state.euler_angle_rad, sensor_measurement.imu_meas.gyro_rads);
-    scalar_multiply(delta_time, &euler_angle_dot, &delta_euler_angle_rad);
-    estimated_state.euler_angle_rad = vector_add(&estimated_state.euler_angle_rad, &delta_euler_angle_rad);
-
-    // Euler angle update from accelerometer.
-    const float accel_y_sq = sensor_measurement.imu_meas.accel_mpss.y * sensor_measurement.imu_meas.accel_mpss.y;
-    const float accel_z_sq = sensor_measurement.imu_meas.accel_mpss.z * sensor_measurement.imu_meas.accel_mpss.z;
-    const float accel_magnitude_sq
-        = sensor_measurement.imu_meas.accel_mpss.x * sensor_measurement.imu_meas.accel_mpss.x + accel_y_sq + accel_z_sq;
-    if (90.0F < accel_magnitude_sq && accel_magnitude_sq < 110.0F)
-    {
-        float phi_est   = atan2f(-sensor_measurement.imu_meas.accel_mpss.y, -sensor_measurement.imu_meas.accel_mpss.z);
-        float theta_est = atan2f(sensor_measurement.imu_meas.accel_mpss.x, sqrtf(accel_y_sq + accel_z_sq));
-        // Apply complimentary filter update to euler angle estimates
-        estimated_state.euler_angle_rad.x = 0.99F * estimated_state.euler_angle_rad.x + 0.01F * phi_est;
-        estimated_state.euler_angle_rad.y = 0.99F * estimated_state.euler_angle_rad.y + 0.01F * theta_est;
-    }
-
+    // Store timestamp for estimated_state.
     estimated_state.timestamp_usec = sensor_measurement.imu_meas.timestamp_usec;
 
     // Write to global_data.
     write_estimated_state(estimated_state);
+}
+
+void propagate_state_estimate(const imu_meas_t *imu_meas, vehicle_state_t *estimated_state)
+{
+    const float delta_time = (imu_meas->timestamp_usec - estimated_state->timestamp_usec) * 1E-6F;
+
+    // Euler angle update from gyro.
+    vector_t       delta_euler_angle_rad;
+    const vector_t euler_angle_dot = calculate_xdot(estimated_state->euler_angle_rad, imu_meas->gyro_rads);
+    scalar_multiply(delta_time, &euler_angle_dot, &delta_euler_angle_rad);
+    estimated_state->euler_angle_rad = vector_add(&estimated_state->euler_angle_rad, &delta_euler_angle_rad);
+}
+
+void measurement_update(const sensor_measurement_t *sensor_measurement, vehicle_state_t *estimated_state)
+{
+    // Euler angle measurement from accelerometer.
+    const float accel_y_sq = sensor_measurement->imu_meas.accel_mpss.y * sensor_measurement->imu_meas.accel_mpss.y;
+    const float accel_z_sq = sensor_measurement->imu_meas.accel_mpss.z * sensor_measurement->imu_meas.accel_mpss.z;
+
+    // Apply complimentary filter update to euler angle estimates if acceleration measurement magnitude is near 9.8mpss.
+    const float accel_magnitude_sq
+        = sensor_measurement->imu_meas.accel_mpss.x * sensor_measurement->imu_meas.accel_mpss.x + accel_y_sq
+          + accel_z_sq;
+    if (90.0F < accel_magnitude_sq && accel_magnitude_sq < 110.0F)
+    {
+        float phi_est = atan2f(-sensor_measurement->imu_meas.accel_mpss.y, -sensor_measurement->imu_meas.accel_mpss.z);
+        float theta_est = atan2f(sensor_measurement->imu_meas.accel_mpss.x, sqrtf(accel_y_sq + accel_z_sq));
+
+        estimated_state->euler_angle_rad.x = 0.99F * estimated_state->euler_angle_rad.x + 0.01F * phi_est;
+        estimated_state->euler_angle_rad.y = 0.99F * estimated_state->euler_angle_rad.y + 0.01F * theta_est;
+    }
 }

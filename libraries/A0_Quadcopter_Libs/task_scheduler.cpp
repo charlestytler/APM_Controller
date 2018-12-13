@@ -33,7 +33,7 @@ void scheduler_init()
       they are expected to take (in microseconds)
      */
     static const AP_Scheduler::Task scheduler_tasks[] PROGMEM
-        = {{update_euler_angle_estimate, 1, 1500}, {read_baro_alt, 2, 1000}, {comm_logging_downlink, 2, 1200}};
+        = {{state_estimation_execute, 1, 1500}, {read_baro_alt, 2, 1000}, {comm_logging_downlink, 2, 1200}};
 
     scheduler.init(&scheduler_tasks[0], sizeof(scheduler_tasks) / sizeof(scheduler_tasks[0]));
 }
