@@ -8,6 +8,10 @@
 
 #include "global_data.h"
 
+#ifdef OFF_TARGET_COMPILE
+extern "C"
+{
+#endif
 
 //
 // Initializes estimated_state to initial condition of zero velocity/rotation at x,y position of (0,0).
@@ -33,5 +37,8 @@ void propagate_state_estimate(const imu_meas_t *imu_meas, vehicle_state_t *estim
 // input/outupt: estimated_state - Updates the propagated estimated_state with the innovation from the measurements.
 void measurement_update(const sensor_measurement_t *sensor_measurement, vehicle_state_t *estimated_state);
 
+#ifdef OFF_TARGET_COMPILE
+}
+#endif
 
 #endif
